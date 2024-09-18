@@ -1,24 +1,41 @@
-import { Model, DataTypes, Sequelize } from "sequelize";
+import { Model, DataTypes, Sequelize } from 'sequelize';
 
-export class equipmentModel extends Model {
+// Interfaz para el dispositivo.
+export interface IDevice {
+    id?: number;
+    mark: string;
+    model: string;
+    status: 'activo' | 'reparación' | 'de baja';
+    ubication: string;
+    adquisition_date: Date;
+    assignedTo?: number; 
+    createdAt?: Date;
+    updatedAt?: Date;
+}
+
+// Definición del modelo de dispositivo.
+export class equipmentModel extends Model<IDevice> {
     declare mark: string;
     declare model: string;
-    declare state: string;
+    declare status: 'activo' | 'reparación' | 'de baja';
     declare ubication: string;
-    declare adquisition_date: string;
+    declare adquisition_date: Date;
+    declare assignedTo?: number;
+    declare createdAt?: Date;
+    declare updatedAt?: Date;
 
-    static initModel(instancia: Sequelize) {
+    static initModel(sequelize: Sequelize) {
         equipmentModel.init({
             mark: {
                 type: DataTypes.STRING,
-                allowNull: true,
+                allowNull: false,
             },
             model: {
                 type: DataTypes.STRING,
                 allowNull: false,
             },
-            state: {
-                type: DataTypes.STRING,
+            status: {
+                type: DataTypes.ENUM('activo', 'reparación', 'de baja'),
                 allowNull: false,
             },
             ubication: {
@@ -30,11 +47,19 @@ export class equipmentModel extends Model {
                 allowNull: false,
                 defaultValue: DataTypes.NOW,
             },
+            assignedTo: {
+                type: DataTypes.INTEGER,
+                allowNull: true,
+                references: {
+                    model: 'User',
+                    key: 'id',
+                },
+            }
         }, {
-            sequelize: instancia,
+            sequelize,
             modelName: 'equipmentModel',
             tableName: 'equipments',
-            timestamps: false,
-        })
+            timestamps: true,
+        });
     }
 }
