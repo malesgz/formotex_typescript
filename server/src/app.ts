@@ -1,8 +1,4 @@
-import { dbConnection } from './database/db';
+import Server from './Server';
 
-const startServer = async () => {
-    await dbConnection.connectDb();
-    // Aquí puedes agregar la inicialización del servidor si la tienes
-};
-
-startServer();
+const server = new Server ();
+server.listen();

@@ -1,22 +1,12 @@
-import 'dotenv/config';
+import dotenv from 'dotenv';
+dotenv.config();
 
-class DbConfig {
-    port: string;
-    key: string = "ñññññ";
+type VE = string | undefined;
+export const PORT: VE = process.env.PORT;
+export const URI: VE = process.env.DB_URI;
+export const JWT_SECRET: VE = process.env.JWT_SECRET;
 
-    constructor() {
-        this.port = process.env.PORT || '5040';
-    }
-
-    getEnvDataBase() {
-        return {
-            dbUri: process.env.DB_URI || 'postgresql://postgres:root@localhost:5432/formotex'
-        };
-    }
-
-    getKey() {
-        return this.key;
-    }
-}
-
-export const dbConfig = new DbConfig();
+//Verificaciones.
+console.log('PORT:', PORT);
+console.log('URI:', URI);
+console.log('JWT_SECRET:', JWT_SECRET);

@@ -1,19 +1,14 @@
-import jwt from 'jsonwebtoken';
-import { ICreateJWTResponse, Payload } from '../interfaces/authInterface';
-import { dbConfig } from '../config/dbConfig';
+import jwt from "jsonwebtoken";
+import { JWT_SECRET } from "../config/dbConfig"; // Asegúrate de que esta ruta es correcta
 
-export const addJWT = (payload: Payload): Promise<ICreateJWTResponse> => {
-  return new Promise((resolve, reject) => {
-    jwt.sign(payload, dbConfig.getKey(), (err: Error | null, token: string | undefined) => {
-      if (err) {
-        return reject('Error al firmar el token');
-      }
-
-      if (!token) {
-        return reject('El token no pudo generarse');
-      }
-
-      resolve({ token });
+export const createJWT = (payload: { id: number; role: string }) => {
+    return new Promise<string>((resolve, reject) => {
+        jwt.sign(payload, JWT_SECRET as string, { expiresIn: '1h' }, (err, token) => {
+            if (err) {
+                reject("Error while creating the token");
+            } else {
+                resolve(token as string);
+            }
+        });
     });
-  });
 };

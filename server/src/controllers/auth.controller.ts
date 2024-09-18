@@ -1,45 +1,50 @@
 import { Request, Response } from 'express';
-// import AuthService from '../services/AuthService';
-// import { ILogin } from '../interface/AuthInterface';
-import { userModel } from '../models/userModel';
+import User from '../models/userModel';
+import bcrypt from 'bcryptjs';
+import { createJWT } from '../utils/jwt'; 
 
-export const ctrlAuthRegister = async (req: Request, res: Response): Promise<Response> => {
+// Endpoint para iniciar sesión.
+export const login = async (req: Request, res: Response) => {
+    const { username, password } = req.body;
+
     try {
-        // Nos aseguramos que el cuerpo cumpla con la interfaz
-        const user = req.body;
-
-        await AuthService.register(user);
-
-        return res.status(201).json({
-            message: "Registro correcto"
-        });
-    } catch (error: any) {
-        const statusCode = error.statusCode || 500;
-
-        return res.status(statusCode).json({
-            message: error.message,
-            status: error.status
-        });
+        if (!username || !password) {
+            return res.status(400).json({ message: 'Username and password are required' });
+        }
+        const user = await User.findOne({ where: { username } });
+        if (!user) {
+            return res.status(400).json({ message: 'Invalid credentials' });
+        }
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            return res.status(400).json({ message: 'Invalid credentials' });
+        }
+        const token = await createJWT({ id: user.id, role: user.role }); 
+        res.json({ token, role: user.role });
+    } catch (error) {
+        console.error('Error during login:', error);
+        res.status(500).json({ message: 'Internal Server Error' });
     }
-}
+};
 
-export const ctrlAuthLogin = async (req: Request, res: Response): Promise<Response> => {
+// Endpoint para el registro de un usuario.
+export const register = async (req: Request, res: Response) => {
+    const { username, password, role } = req.body;
+
     try {
-        // Nos aseguramos que el cuerpo cumpla con la interfaz
-        const user: ILogin = req.body;
-        
-        const token = await AuthService.login(user);
-
-        return res.status(200).json({
-            message: "Login correcto",
-            token
-        });
-    } catch (error: any) {
-        const statusCode = error.statusCode || 500;
-
-        return res.status(statusCode).json({
-            message: error.message,
-            status: error.status
-        });
+        if (!username || !password || !role) {
+            return res.status(400).json({ message: 'Username, password, and role are required' });
+        }
+        const existingUser = await User.findOne({ where: { username } });
+        if (existingUser) {
+            return res.status(400).json({ message: 'User already exists' });
+        }
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const user = await User.create({ username, password: hashedPassword, role });
+        const token = await createJWT({ id: user.id, role: user.role });
+        res.status(201).json({ token, role: user.role });
+    } catch (error) {
+        console.error('Error during registration:', error);
+        res.status(500).json({ message: 'Internal Server Error' });
     }
-}
+};

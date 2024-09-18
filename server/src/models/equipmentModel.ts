@@ -1,65 +1,45 @@
-import { Model, DataTypes, Sequelize } from 'sequelize';
+import { Model,DataTypes } from "sequelize";
+import sequelize from "../database/dbConetion";
+import { IEquiposInformaticos } from "../types/interfaces";
 
-// Interfaz para el dispositivo.
-export interface IDevice {
-    id?: number;
-    mark: string;
-    model: string;
-    status: 'activo' | 'reparación' | 'de baja';
-    ubication: string;
-    adquisition_date: Date;
-    assignedTo?: number; 
-    createdAt?: Date;
-    updatedAt?: Date;
+class Equipos extends Model<IEquiposInformaticos> implements IEquiposInformaticos{
+    public id!: number;
+    public name!: string;
+    public type!: string;
+    public status!: "disponible" | "en_reparacion" | "asignado";
+    public location!: string;
+    public fechaCompra!: Date;
 }
 
-// Definición del modelo de dispositivo.
-export class equipmentModel extends Model<IDevice> {
-    declare mark: string;
-    declare model: string;
-    declare status: 'activo' | 'reparación' | 'de baja';
-    declare ubication: string;
-    declare adquisition_date: Date;
-    declare assignedTo?: number;
-    declare createdAt?: Date;
-    declare updatedAt?: Date;
-
-    static initModel(sequelize: Sequelize) {
-        equipmentModel.init({
-            mark: {
-                type: DataTypes.STRING,
-                allowNull: false,
-            },
-            model: {
-                type: DataTypes.STRING,
-                allowNull: false,
-            },
-            status: {
-                type: DataTypes.ENUM('activo', 'reparación', 'de baja'),
-                allowNull: false,
-            },
-            ubication: {
-                type: DataTypes.STRING,
-                allowNull: false,
-            },
-            adquisition_date: {
-                type: DataTypes.DATE,
-                allowNull: false,
-                defaultValue: DataTypes.NOW,
-            },
-            assignedTo: {
-                type: DataTypes.INTEGER,
-                allowNull: true,
-                references: {
-                    model: 'User',
-                    key: 'id',
-                },
-            }
-        }, {
-            sequelize,
-            modelName: 'equipmentModel',
-            tableName: 'equipments',
-            timestamps: true,
-        });
-    }
-}
+Equipos.init({
+    id:{
+        type:DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey:true,
+    },
+    name:{
+        type: DataTypes.STRING,
+        allowNull:false,
+    },
+    type:{
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
+    status:{
+        type: DataTypes.ENUM("disponible","en_reparacion", "asignado"),
+        allowNull:false,
+    },
+    location:{
+        type: DataTypes.STRING,
+        allowNull:false,
+    },
+    fechaCompra:{
+        type:DataTypes.DATE,
+        allowNull:false,
+    },
+},{
+    sequelize,
+    modelName:'Equipos',
+    tableName:'equipos',
+});
+export default Equipos;
