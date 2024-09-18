@@ -10,21 +10,21 @@ export class userModel extends Model {
         userModel.init({
             name: {
                 type: DataTypes.STRING,
-                allowNull: false
+                allowNull: false,
             },
             address: {
                 type: DataTypes.STRING,
-                allowNull: false
+                allowNull: false,
             },
             password: {
                 type: DataTypes.STRING,
-                allowNull: false
+                allowNull: false,
             },
         }, {
             sequelize: instacia,
             modelName: 'userModel',
             tableName: 'users',
-            timestamps: false
+            timestamps: false,
         })
     }
 }

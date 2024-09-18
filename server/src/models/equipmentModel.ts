@@ -11,30 +11,30 @@ export class equipmentModel extends Model {
         equipmentModel.init({
             mark: {
                 type: DataTypes.STRING,
-                allowNull: true
+                allowNull: true,
             },
             model: {
                 type: DataTypes.STRING,
-                allowNull: false
+                allowNull: false,
             },
             state: {
                 type: DataTypes.STRING,
-                allowNull: false
+                allowNull: false,
             },
             ubication: {
                 type: DataTypes.STRING,
-                allowNull: false
+                allowNull: false,
             },
             adquisition_date: {
                 type: DataTypes.DATE,
                 allowNull: false,
-                defaultValue: DataTypes.NOW
+                defaultValue: DataTypes.NOW,
             },
         }, {
             sequelize: instancia,
             modelName: 'equipmentModel',
             tableName: 'equipments',
-            timestamps: false
+            timestamps: false,
         })
     }
 }
